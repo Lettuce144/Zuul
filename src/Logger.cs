@@ -16,7 +16,6 @@ namespace Zuul.src
             Info,
         }
 
-
         public void LogToConsole(string message, LogType type)
         {
             switch (type)

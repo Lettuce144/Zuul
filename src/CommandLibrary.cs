@@ -8,7 +8,7 @@ class CommandLibrary
 	// Constructor - initialise the command words.
 	public CommandLibrary()
 	{
-		validCommands = ["help", "go", "quit"];
+		validCommands = ["help", "go", "quit", "pickup", "use", "look", "stats"];
 	}
 
 	// Check whether a given string is a valid command word.

@@ -6,12 +6,12 @@ using Zuul.src;
  * Create two floors
  * 
  */
+
 class Game
 {
 	// Private fields
 	private Parser parser;
 	private Player player;
-
 
 	// Constructor
 	public Game()
@@ -45,17 +45,16 @@ class Game
 
 		office.AddExit("west", lab);
 
-		// Create your Items here
-		// ...
-		// And add them to the Rooms
-		// ...
+		//Add the items
+        //Apple apple = new Apple(1, "Apple a day keeps the doctor away");
+		outside.AddItem(new Apple(1, "e"));
 
-		// Start game outside
-		player.CurrentRoom = outside;
+        // Start game outside
+        player.CurrentRoom = outside;
 	}
 
-	//  Main play routine. Loops until end of play.
-	public void Play()
+    //  Main play routine. Loops until end of play.
+    public void Play()
 	{
 		PrintWelcome();
 
@@ -107,6 +106,19 @@ class Game
 			case "quit":
 				wantToQuit = true;
 				break;
+			case "pickup":
+				player.PickUpItem(command);
+				break;
+			case "use":
+				ParseUse(command);
+				break;
+			case "look":
+				Console.WriteLine($"In this room there is an {player.CurrentRoom.roomInv.ListItems()}");
+				break;
+			case "stats":
+				player.Stats();
+				break;
+
 		}
 
 		return wantToQuit;
@@ -127,8 +139,14 @@ class Game
 		parser.PrintValidCommands();
 	}
 
-	private void ViewStats()
+	private void ParseUse(Command command)
 	{
+		if(!command.HasSecondWord())
+		{
+			Console.WriteLine("Which item do you want to use?");
+		}
+
+		player.UseItem(command.SecondWord);
 		
 	}
 

@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using Zuul.src;
 
 class Room
 {
 	// Private fields
 	private string description;
 	private Dictionary<string, Room> exits; // stores exits of this room.
+	//All items in the room
+	public Inventory roomInv { get; }
 
 	// Create a room described "description". Initially, it has no exits.
 	// "description" is something like "in a kitchen" or "in a court yard".
@@ -12,12 +15,19 @@ class Room
 	{
 		description = desc;
 		exits = new Dictionary<string, Room>();
+		// A room has an inventory size of 9999, gotta fix this
+		roomInv = new Inventory(9999);
 	}
 
 	// Define an exit for this room.
 	public void AddExit(string direction, Room neighbor)
 	{
 		exits.Add(direction, neighbor);
+	}
+
+	public void AddItem(Item item)
+	{
+		roomInv.AddToInventory(item);
 	}
 
 	// Return the description of the room.
