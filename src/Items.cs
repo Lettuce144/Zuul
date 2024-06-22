@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Zuul.src
+﻿namespace Zuul.src
 {
-
-    //Note: Every item has it's own functionality, this is defined in it's Use function
-
+    // This file contains all of the items in the game, these items all inherit from the same parent, the Item class.
+    // Note: Every item has it's own functionality, this is defined in it's Use function
     class Item
     {
         protected string Description;
@@ -18,6 +10,7 @@ namespace Zuul.src
 
         public Item(int weight, string description)
         {
+            // Set the name to the class name
             Name = GetType().Name;
             Weight = weight;
             Description = description;
@@ -35,9 +28,9 @@ namespace Zuul.src
         {
             Console.WriteLine($"Using {Name}");
         }
+
     }
 
-    //Make derrived classes possible
     class Apple : Item
     {
         public Apple(int weight, string description) : base(weight, description)
@@ -46,9 +39,40 @@ namespace Zuul.src
         
         public override void Use(Player player)
         {
-            player.Damage(25);
+            player.Heal(25);
         }
-        
+    }
+
+    class MedKit : Apple
+    {
+        public MedKit(int weight, string description) : base(weight, description)
+        {
+        }
+
+        public override void Use(Player player)
+        {
+            player.Heal(50);
+        }
+    }
+
+    class OfficeKey : Item
+    {
+        public OfficeKey(int weight, string description) : base(weight, description)
+        {
+        }
+
+        public override void Use(Player player)
+        {
+            //This is very messy, oh well
+            //Check if there is an safe in the current room
+            if(player.CurrentRoom.roomInv.GetItem("OfficeSafe") != null)
+            {
+                Console.WriteLine("You opened the safe!");
+
+                Apple apple = new Apple(1, "Apple");
+                player.AddItemToInv(apple);
+            }
+        }
     }
 
 }

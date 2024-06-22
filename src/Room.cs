@@ -19,8 +19,8 @@ class Room
 		roomInv = new Inventory(9999);
 	}
 
-	// Define an exit for this room.
-	public void AddExit(string direction, Room neighbor)
+    // Define an exit for this room.
+    public void AddExit(string direction, Room neighbor)
 	{
 		exits.Add(direction, neighbor);
 	}

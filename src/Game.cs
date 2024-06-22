@@ -13,8 +13,10 @@ class Game
 	private Parser parser;
 	private Player player;
 
-	// Constructor
-	public Game()
+    bool finished = false;
+
+    // Constructor
+    public Game()
 	{
 		parser = new Parser();
 		player = new Player();
@@ -46,8 +48,14 @@ class Game
 		office.AddExit("west", lab);
 
 		//Add the items
-        //Apple apple = new Apple(1, "Apple a day keeps the doctor away");
-		outside.AddItem(new Apple(1, "e"));
+        Apple apple = new Apple(1, "Apple a day keeps the doctor away");
+		outside.AddItem(apple);
+
+		OfficeKey officeKey = new OfficeKey(3, "A key for the office");
+		lab.AddItem(officeKey);
+
+		Item safe = new Item(50, "This is an safe", "OfficeSafe");
+		office.AddItem(safe);
 
         // Start game outside
         player.CurrentRoom = outside;
@@ -60,7 +68,7 @@ class Game
 
 		// Enter the main command loop. Here we repeatedly read commands and
 		// execute them until the player wants to quit.
-		bool finished = false;
+
 		while (!finished)
 		{
 			Command command = parser.GetCommand();
@@ -107,7 +115,7 @@ class Game
 				wantToQuit = true;
 				break;
 			case "pickup":
-				player.PickUpItem(command);
+				ParsePickup(command);
 				break;
 			case "use":
 				ParseUse(command);
@@ -124,16 +132,29 @@ class Game
 		return wantToQuit;
 	}
 
-	// ######################################
-	// implementations of user commands:
-	// ######################################
-	
-	// Print out some help information.
-	// Here we print the mission and a list of the command words.
-	private void PrintHelp()
+    public void ParsePickup(Command command)
+    {
+        if (!command.HasSecondWord())
+        {
+            Console.WriteLine("What item?");
+            return;
+        }
+
+        player.PickUpItem(command.SecondWord);
+    }
+
+    // ######################################
+    // implementations of user commands:
+    // ######################################
+
+    // Print out some help information.
+    // Here we print the mission and a list of the command words.
+    private void PrintHelp()
 	{
-		Console.WriteLine("You are lost. You are alone.");
-		Console.WriteLine("You wander around at the university.");
+		Console.WriteLine("You are lost, alone and bleeding.");
+        Console.WriteLine("Everytime you go somewhere you lose hp.");
+		Console.WriteLine("So, choose carefully.");
+        Console.WriteLine("You wander around at the university.");
 		Console.WriteLine();
 		// let the parser print the commands
 		parser.PrintValidCommands();
@@ -150,6 +171,11 @@ class Game
 		
 	}
 
+	private void EndGame()
+	{
+		finished = true;
+	}
+
 	// Try to go to one direction. If there is an exit, enter the new
 	// room, otherwise print an error message.
 	private void GoRoom(Command command)
@@ -161,7 +187,15 @@ class Game
 			return;
 		}
 
-		string direction = command.SecondWord;
+        //Make sure our health is not below zero
+        if (!player.IsAlive())
+        {
+            Console.WriteLine("Oh no, you're dead!");
+			EndGame();
+            return;
+        }
+
+        string direction = command.SecondWord;
 
 		// Try to go to the next room.
 		Room nextRoom = player.CurrentRoom.GetExit(direction);
@@ -174,6 +208,6 @@ class Game
         player.CurrentRoom = nextRoom;
 		Console.WriteLine(player.CurrentRoom.GetLongDescription());
 
-		player.Damage(15);
-	}
+        player.Damage(15);
+    }
 }

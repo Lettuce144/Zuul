@@ -13,7 +13,7 @@ namespace Zuul.src
     class Inventory
     {
         private Dictionary<string, Item> items;
-        private int currentWeight = 0;
+        private int currentWeight;
         public int MaxSize { get; }
 
         public Inventory(int maxWeight) 
@@ -22,10 +22,14 @@ namespace Zuul.src
             MaxSize = maxWeight;
         }
 
-        public void RemoveFromInventory(string item)
+        public void RemoveFromInventory(string desireditem)
         {
-            currentWeight -= GetItem(item).Weight;
-            items.Remove(item);
+            if (currentWeight > 0)
+            {
+                currentWeight -= GetItem(desireditem).Weight;
+            }
+
+            items.Remove(desireditem);
         }
 
         public int GetCurrentWeight()
@@ -35,7 +39,7 @@ namespace Zuul.src
 
         public void AddToInventory(Item item)
         {
-            if (item != null && item.Weight !> currentWeight)
+            if (currentWeight < MaxSize)
             {
                 currentWeight += item.Weight;
             }
@@ -87,15 +91,11 @@ namespace Zuul.src
 
         public bool IsAlive() 
         {
-            return health != 0;
+            return !(health <= 0);
         }
 
         public void Damage(int damage)
         {
-            //Make sure our health is not below zero
-            if ((health - damage) < 0)
-                return;
-
             logger.LogToConsole($"Damage: {damage}", Logger.LogType.Info);
             health -= damage;
         }
@@ -113,16 +113,14 @@ namespace Zuul.src
             return inventory.ListItems();
         }
 
-        public void PickUpItem(Command command)
+        public void AddItemToInv(Item item)
         {
-            if (!command.HasSecondWord())
-            {
-                Console.WriteLine("What item?");
-                return;
-            }
+            inventory.AddToInventory(item);
+        }
 
-            string desiredItem = command.SecondWord;
-            Item item = CurrentRoom.roomInv.GetItem(desiredItem);
+        public void PickUpItem(string desireditem)
+        {
+            Item item = CurrentRoom.roomInv.GetItem(desireditem);
 
             if (item == null)
             {
